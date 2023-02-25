@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Input, Grid } from "@nextui-org/react";
+import ArrayField from "./array-field";
 
 
 export default function CustomInput() {
@@ -21,17 +22,23 @@ export default function CustomInput() {
   const formConfig = [
     {
       key: 'name',
-      label: 'Name',
-      placeholder: 'Recipe name',
+      props: {
+        label: 'Name',
+        placeholder: 'Recipe name',
+      }
     },
     {
       key: 'ingredient',
-      label: 'Ingredient',
-      placeholder: 'ingredient name',
-    }
+      props: {
+        label: 'Ingredient',
+        placeholder: 'ingredient name',
+      },
+      fieldType: 'string'
+    },
   ];
   const handleFieldChange = ({ target }, fieldName) => {
-    setForm(Object.assign(form, {
+    setForm(prevState => ({
+      ...prevState,
       [fieldName]: target.value
     }))
   }
@@ -41,13 +48,18 @@ export default function CustomInput() {
     <Grid.Container gap={4}>
       {formConfig?.map(field => (
         <Grid key={field.key}>
-          {console.log('from temp', form[field.key])}
-          <Input
-            key={field.key}
-            initialValue={form[field.key]}
-            onChange={(e) => handleFieldChange(e, field.key)}
-            {...field}
-          />
+          {
+            field?.fieldType === 'string' ?
+            // array input group
+            <ArrayField array-data={form[field.key]} /> :
+
+            // single input
+            <Input
+              initialValue={form[field.key]}
+              onChange={(e) => handleFieldChange(e, field.key)}
+              {...field.props}
+            />
+          }
         </Grid>
       ))}
     </Grid.Container>
